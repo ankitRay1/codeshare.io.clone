@@ -36,6 +36,36 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
 
+  #Flutter RiverPod for State Management
+  flutter_riverpod: ^2.0.2
+
+  #Google Sign in
+  google_sign_in: ^5.4.2
+
+  #handling socket and http connection
+  socket_io_client: ^1.0.2
+  http: ^0.13.5
+
+  #storing authetnication keys in LocalStorage Web , Sharedferences in Android and NSUserDefaults in iOS with the help of of this plugin
+  shared_preferences: ^2.0.15
+
+  # Router for web, mobile and desktop. URL-based routing, simple navigation of tabs and nested routes
+  routemaster: ^1.0.1
+
+  # A rich text editor supporting mobile and web
+  flutter_quill: ^6.1.1
+  flutter_quill_extensions: ^0.1.0
+
+  # Flutter plugin for getting commonly used locations on host platform file systems, such as the temp and app data directories.
+  path_provider: ^2.0.11
+
+  filesystem_picker: ^3.1.0
+  file_picker: ^5.2.2
+
+  universal_html: ^2.0.8
+  flutter_svg: ^1.1.6
+  url_strategy: ^0.2.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -58,9 +88,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  assets:
+    - assets/images/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
