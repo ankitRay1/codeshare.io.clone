@@ -334,7 +334,7 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                       Expanded(
                         child: TextFormField(
                           initialValue:
-                              'http://localhost:4000/#/document/${widget.documentId}',
+                              'http://localhost:4000/${widget.documentId}',
                           style: const TextStyle(
                               color: kBlackColor,
                               fontWeight: FontWeight.w600,

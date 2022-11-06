@@ -1,3 +1,3 @@
 class Constant {
-  static String hostname = 'http://localhost:3000';
+  static String hostname = 'https://codeshareapi.herokuapp.com';
 }
