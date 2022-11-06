@@ -334,7 +334,7 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                       Expanded(
                         child: TextFormField(
                           initialValue:
-                              'http://localhost:4000/${widget.documentId}',
+                              'https://codeurl.web.app/${widget.documentId}',
                           style: const TextStyle(
                               color: kBlackColor,
                               fontWeight: FontWeight.w600,
@@ -364,7 +364,7 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                           onPressed: () {
                             Clipboard.setData(ClipboardData(
                                     text:
-                                        'https://localhost:4000/#/document/${widget.documentId}'))
+                                        'https://codeurl.web.app/${widget.documentId}'))
                                 .then((value) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
