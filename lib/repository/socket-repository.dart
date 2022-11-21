@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
 import '../clients/socket_client.dart';
@@ -22,22 +23,9 @@ class SocketRepository {
   void autoSave({required Map<String, dynamic> data}) {
     _socketClient!.emit('save', data);
   }
-  void testSocket() {
-    try {
-      _socketClient!.onConnect((_) {
-        print('connect');
-        _socketClient!.emit('msg', 'test');
-      });
-      // _socketClient!.connect();
-      // _socketClient!
-      //     .on('connect', (_) => print('connect: ${_socketClient!.id}'));
-    } catch (e) {
-      print(e.toString());
-    }
 
-    // _socketClient?.socket!.on('event', (data) => print('I am on data $data'));
-    // _socketClient?.socket!.ondisconnect();
-    // _socketClient?.socket!
-    //     .on('fromServer', (data) => print('I am fromServer $data'));
+  void disConnect() {
+    _socketClient!.disconnect();
+    debugPrint('socket client disconnected!');
   }
 }

@@ -54,6 +54,7 @@ class AuthRepository {
                 },
                 body: userData.toJson());
 
+        // print(response.body);
         final responseData = jsonDecode(response.body);
 
         switch (response.statusCode) {
@@ -122,5 +123,10 @@ class AuthRepository {
           ApiResponseData(message: e.toString(), responseData: null);
     }
     return apiResponseData;
+  }
+
+  void signOut() async {
+    await _googleSignIn.signOut();
+    _localStorageRepository.remoteTokenFromStorage();
   }
 }

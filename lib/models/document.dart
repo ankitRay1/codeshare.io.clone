@@ -5,13 +5,16 @@ class Document {
   final String uid;
 
   final String title;
+  final int createdAt;
+  final int updatedAt;
   final List content;
-  Document({
-    required this.id,
-    required this.uid,
-    required this.title,
-    required this.content,
-  });
+  Document(
+      {required this.id,
+      required this.uid,
+      required this.title,
+      required this.content,
+      required this.createdAt,
+      required this.updatedAt});
 
   Map<String, dynamic> toMap() {
     final result = <String, dynamic>{};
@@ -29,6 +32,8 @@ class Document {
       id: map['documentId'] ?? '',
       uid: map['uid'] ?? '',
       title: map['title'] ?? '',
+      createdAt: map['createdAt'] ?? '',
+      updatedAt: map['updatedAt'] ?? '',
       content: List.from(map['content']),
     );
   }

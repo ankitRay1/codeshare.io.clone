@@ -1,34 +1,23 @@
 import 'dart:async';
 
-import 'dart:io';
-import 'dart:ui';
-
-import 'package:codeshareclone/common/function.dart';
+import 'package:codeshareclone/helper/helper_function.dart';
 import 'package:codeshareclone/models/user.dart';
 import 'package:codeshareclone/repository/socket-repository.dart';
 import 'package:codeshareclone/widgets/code_editor_widget.dart';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_quill/extensions.dart';
+
 import 'package:flutter_quill/flutter_quill.dart' hide Text;
-import 'package:flutter_quill_extensions/flutter_quill_extensions.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 
 import 'package:routemaster/routemaster.dart';
-import 'package:tuple/tuple.dart';
 
 import '../repository/auth-repository.dart';
 import '../repository/document-repository.dart';
 import '../utils/color.dart';
-
-enum _SelectionType {
-  none,
-  word,
-  // line,
-}
 
 class CodeScreen extends ConsumerStatefulWidget {
   final String documentId;
@@ -39,30 +28,26 @@ class CodeScreen extends ConsumerStatefulWidget {
 
 class _CodeScreenState extends ConsumerState<CodeScreen> {
   QuillController? _controller;
+  String? _documentTitle;
 
-  final TextEditingController _documentTitleEditor = TextEditingController();
   SocketRepository socketRepository = SocketRepository();
   User? userState;
-
-  Timer? _selectAllTimer;
-  _SelectionType _selectionType = _SelectionType.none;
-
-  // SocketRepository socketRepository = SocketRepository();
-
+  Timer? _timer;
   @override
   void dispose() {
-    _selectAllTimer?.cancel();
+    _timer?.cancel();
     super.dispose();
-    _documentTitleEditor.dispose();
+
+    _controller?.dispose();
+    _controller?.document.close();
+    socketRepository.disConnect();
   }
 
   @override
   void initState() {
     super.initState();
     socketRepository.joinRoom(documentId: widget.documentId);
-    socketRepository.testSocket();
 
-    // _loadFromAssets();
     _fetchDocumentData();
 
     socketRepository.changeListener((dataChanges) {
@@ -72,7 +57,9 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
           ChangeSource.REMOTE);
     });
 
-    Timer.periodic(const Duration(seconds: 2), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 2), (timer) {
+      debugPrint(
+          "saving data to server ${_controller?.document.toDelta() ?? ''}");
       Map<String, dynamic> dataToSave = {
         'delta': _controller?.document.toDelta(),
         'room': widget.documentId
@@ -84,14 +71,12 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
   @override
   Widget build(BuildContext context) {
     if (_controller == null) {
-      return const Scaffold(body: Center(child: Text('Loading...')));
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     userState = ref.watch(userStateProvider);
 
-    final screenSize = MediaQuery.of(context).size;
-
     return Scaffold(
-      appBar: screenSize.width <= 600
+      appBar: isMobile(context)
           ? null
           : AppBar(
               elevation: 0,
@@ -103,6 +88,8 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                 child: InkWell(
                   onTap: () {
                     final navigator = Routemaster.of(context);
+
+                    // print(_controller?.document.toPlainText());
 
                     navigator.push('/');
                   },
@@ -170,7 +157,7 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                               padding: const EdgeInsets.all(14),
                               backgroundColor: Colors.transparent,
                             ),
-                            onPressed: () {},
+                            onPressed: () => profileDialog(context, ref),
                             icon: CircleAvatar(
                                 backgroundImage: NetworkImage(userState
                                         ?.profilePic ??
@@ -191,68 +178,72 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
               ),
             ),
       // body: _buildWritingEditor(context),
-      body: Container(
-        child: Row(children: [
-          Expanded(
-            flex: 2,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: CodeEditorWidget(quillController: _controller!),
-            ),
+      body: Row(children: [
+        Expanded(
+          flex: 2,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: CodeEditorWidget(quillController: _controller!),
           ),
-          Container(
-            width: 60.0,
-            decoration: const BoxDecoration(color: kDartBlue),
-            // padding: const EdgeInsets.all(20),
-            child: Column(
-              children: [
-                IconButton(
-                    padding: const EdgeInsets.symmetric(vertical: 20),
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.settings,
-                      color: kGreyColor,
-                    )),
-                const Divider(
-                  color: kBorderBottom,
-                  thickness: 1.3,
-                ),
-                IconButton(
-                    padding: const EdgeInsets.symmetric(vertical: 20),
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.save_alt,
-                      color: kGreyColor,
-                    )),
-                const Divider(
-                  color: kBorderBottom,
-                  thickness: 1.3,
-                ),
-                IconButton(
-                    padding: const EdgeInsets.symmetric(vertical: 20),
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.add,
-                      size: 25,
-                      color: kGreyColor,
-                    )),
-                const Divider(
-                  color: kBorderBottom,
-                  thickness: 1.3,
-                ),
-                const Spacer(),
-                IconButton(
-                    padding: const EdgeInsets.symmetric(vertical: 20),
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.info,
-                      color: kGreyColor,
-                    )),
-              ],
-            ),
-          )
-        ]),
-      ),
+        ),
+        Container(
+          width: 60.0,
+          decoration: const BoxDecoration(color: kDartBlue),
+          // padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              IconButton(
+                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  onPressed: () {},
+                  icon: const Icon(
+                    Icons.settings,
+                    color: kGreyColor,
+                  )),
+              const Divider(
+                color: kBorderBottom,
+                thickness: 1.3,
+              ),
+              IconButton(
+                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  onPressed: () {
+                    print('I am pressed');
+                    downloadCodeFile(
+                        bytes: _controller!.document.toPlainText().codeUnits,
+                        downloadName: '$_documentTitle.txt');
+                  },
+                  icon: const Icon(
+                    Icons.save_alt,
+                    color: kGreyColor,
+                  )),
+              const Divider(
+                color: kBorderBottom,
+                thickness: 1.3,
+              ),
+              IconButton(
+                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  onPressed: () => createNewDocument(
+                      ref: ref, context: context, token: userState?.token),
+                  icon: const Icon(
+                    Icons.add,
+                    size: 25,
+                    color: kGreyColor,
+                  )),
+              const Divider(
+                color: kBorderBottom,
+                thickness: 1.3,
+              ),
+              const Spacer(),
+              IconButton(
+                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  onPressed: () {},
+                  icon: const Icon(
+                    Icons.info,
+                    color: kGreyColor,
+                  )),
+            ],
+          ),
+        )
+      ]),
     );
   }
 
@@ -263,13 +254,13 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
         .fetchDocumentById(documentId: widget.documentId);
 
     if (apiResponseData.responseData != null) {
+      _documentTitle = apiResponseData.responseData.title;
       _controller = QuillController(
           document: apiResponseData.responseData.content.isEmpty
               ? Document()
               : Document.fromDelta(
                   Delta.fromJson(apiResponseData.responseData.content)),
           selection: const TextSelection.collapsed(offset: 0));
-      _documentTitleEditor.text = apiResponseData.responseData.title;
 
       setState(() {});
     }
@@ -397,6 +388,4 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
           );
         });
   }
-
-  bool _isDesktop() => !kIsWeb && !Platform.isAndroid && !Platform.isIOS;
 }

@@ -32,7 +32,7 @@ class CodeEditorWidget extends ConsumerWidget {
                 'Write or paste code here then share. Anyone you share with will see code as it is typed!',
             expands: false,
 
-            padding: EdgeInsets.zero,
+            padding: const EdgeInsets.only(left: 16),
             // onTapUp: (details, p1) {
             //   return _onTripleClickSelection();
             // },

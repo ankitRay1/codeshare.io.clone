@@ -16,6 +16,8 @@ const kBlackColor = Colors.black;
 const kLightBlack = Color(0xff30353e);
 
 const kBlueColor = Colors.blueAccent;
+
+const kDarkBlueTextColor = Color(0xff4d76ba);
 const kEditorColor = Color(0xff272822);
 
 const kBorderBottom = Color(0xff222222);

@@ -1,14 +1,14 @@
 import 'package:codeshareclone/repository/auth-repository.dart';
 import 'package:codeshareclone/utils/color.dart';
+
 import 'package:codeshareclone/widgets/featurebox.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
-// import 'package:routemaster/routemaster.dart';
-
-import '../common/function.dart';
+import '../helper/helper_function.dart';
 import '../models/user.dart';
 
+// ignore: must_be_immutable
 class HomeScreen extends ConsumerWidget {
   HomeScreen({super.key});
 
@@ -41,7 +41,9 @@ class HomeScreen extends ConsumerWidget {
                           padding: const EdgeInsets.all(14),
                           backgroundColor: Colors.transparent,
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          profileDialog(context, ref);
+                        },
                         icon: CircleAvatar(
                             backgroundImage: NetworkImage(userState
                                     ?.profilePic ??
@@ -71,7 +73,7 @@ class HomeScreen extends ConsumerWidget {
                         ),
                         label: const Text(
                           'Login',
-                          style: TextStyle(color: kWhiteColor),
+                          style: TextStyle(color: kWhiteColor, fontSize: 20),
                         )),
                   ),
           ],
@@ -115,8 +117,8 @@ class HomeScreen extends ConsumerWidget {
                   height: 35,
                 ),
                 TextButton(
-                  onPressed: () =>
-                      createNewDocument(ref: ref, context: context),
+                  onPressed: () => createNewDocument(
+                      ref: ref, context: context, token: userState?.token),
                   style: TextButton.styleFrom(
                       backgroundColor: kRedColor,
                       padding: const EdgeInsets.symmetric(
