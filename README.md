@@ -32,7 +32,7 @@ Plese take a look on live version [codeurl.web.app](https://codeurl.web.app)
 
 ## Installation
 
-After cloning this repository, migrate to `` folder. Then, follow the following steps:
+After cloning this repository, migrate to `cd codeshare.io.clone` folder. Then, follow the following steps:
 
 - Create Google Cloud Project
 - Enable Oauth for Web, Android and iOS
